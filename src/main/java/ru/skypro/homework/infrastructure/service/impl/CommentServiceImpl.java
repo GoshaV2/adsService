@@ -6,12 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.core.mapper.CommentMapper;
 import ru.skypro.homework.core.model.Comment;
 import ru.skypro.homework.core.model.User;
+import ru.skypro.homework.core.repository.AdRepository;
 import ru.skypro.homework.core.repository.CommentRepository;
-import ru.skypro.homework.core.service.AdService;
 import ru.skypro.homework.core.service.CommentService;
 import ru.skypro.homework.infrastructure.dto.request.CommentRequest;
 import ru.skypro.homework.infrastructure.dto.response.CommentListResponse;
 import ru.skypro.homework.infrastructure.dto.response.CommentResponse;
+import ru.skypro.homework.infrastructure.facade.AuthenticationFacade;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +22,8 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
-    private final AdService adService;
+    private final AuthenticationFacade authenticationFacade;
+    private final AdRepository adRepository;
 
     private Comment getComment(long adId, long commentId) {
         //todo exception
@@ -36,10 +38,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResponse addComment(long adId, CommentRequest commentRequest, User author) {
+    public CommentResponse addComment(long adId, CommentRequest commentRequest) {
+        User user = (User) authenticationFacade.getAuthentication().getPrincipal();
         Comment comment = commentMapper.fromCommentRequest(commentRequest);
-        comment.setAd(adService.getAd(adId));
-        comment.setAuthor(author);
+        comment.setAd(adRepository.getReferenceById(adId));
+        comment.setAuthor(user);
         comment.setCreatedDate(LocalDateTime.now());
         commentRepository.save(comment);
         return commentMapper.toCommentResponse(comment);

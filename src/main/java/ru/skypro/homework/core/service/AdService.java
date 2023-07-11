@@ -2,10 +2,10 @@ package ru.skypro.homework.core.service;
 
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.core.model.Ad;
-import ru.skypro.homework.core.model.User;
 import ru.skypro.homework.infrastructure.dto.request.AdRequest;
+import ru.skypro.homework.infrastructure.dto.response.AdListResponse;
+import ru.skypro.homework.infrastructure.dto.response.AdListResponsePage;
 import ru.skypro.homework.infrastructure.dto.response.AdResponse;
-import ru.skypro.homework.infrastructure.dto.response.AdsListResponse;
 import ru.skypro.homework.infrastructure.dto.response.FullAdResponse;
 
 /**
@@ -15,21 +15,30 @@ public interface AdService {
     Ad getAd(long id);
 
     /**
+     * Поиск по ключевому слову, например название или описание
+     *
+     * @param keyWord      ключевое слово
+     * @param page         страница
+     * @param countPerPage количество на странице
+     * @return дто со списком объявлений и информации о страницах
+     */
+    AdListResponsePage findAds(String keyWord, int page, int countPerPage);
+
+    /**
      * Получить все объявления
      *
      * @return dto со списком
      */
-    AdsListResponse getAllAds();
+    AdListResponse getAllAds();
 
     /**
-     * Добавить объявления
+     * Добавить объявление
      *
      * @param adRequest     дто данные о объявление
      * @param multipartFile файл с картинкой
-     * @param user          автор
      * @return дто с результатом
      */
-    AdResponse addAd(AdRequest adRequest, MultipartFile multipartFile, User user);
+    AdResponse addAd(AdRequest adRequest, MultipartFile multipartFile);
 
     /**
      * Получить полное описание объявление с автором
@@ -61,5 +70,5 @@ public interface AdService {
      * @param authorId id автора
      * @return дто со списком объвлений
      */
-    AdsListResponse getUserAds(long authorId);
+    AdListResponse getUserAds(long authorId);
 }

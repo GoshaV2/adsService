@@ -1,6 +1,5 @@
 package ru.skypro.homework.core.service;
 
-import ru.skypro.homework.core.model.User;
 import ru.skypro.homework.infrastructure.dto.request.CommentRequest;
 import ru.skypro.homework.infrastructure.dto.response.CommentListResponse;
 import ru.skypro.homework.infrastructure.dto.response.CommentResponse;
@@ -22,10 +21,9 @@ public interface CommentService {
      *
      * @param adId           id объявления
      * @param commentRequest дто с данными комментария
-     * @param user           автор комментария
      * @return дто с данными о комментария
      */
-    CommentResponse addComment(long adId, CommentRequest commentRequest, User user);
+    CommentResponse addComment(long adId, CommentRequest commentRequest);
 
     /**
      * Получить комментарий по id

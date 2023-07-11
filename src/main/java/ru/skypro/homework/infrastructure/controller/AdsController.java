@@ -28,16 +28,29 @@ public class AdsController {
 
     @GetMapping
     @Operation(summary = "Получить все объявления")
-    public ResponseEntity<AdsListResponse> getAds() {
+    public ResponseEntity<AdListResponse> getAds() {
         return ResponseEntity.ok(adService.getAllAds());
+    }
+
+    @GetMapping("/find")
+    @Operation(summary = "Найти объявления по названию и описанию")
+    public ResponseEntity<AdListResponsePage> getAdsByKeyWord(@RequestParam("keyWord") String keyWord,
+                                                              @RequestParam(name = "page",
+                                                                      required = false,
+                                                                      defaultValue = "0"
+                                                              ) int page,
+                                                              @RequestParam(name = "countPerPage",
+                                                                      required = false,
+                                                                      defaultValue = "50"
+                                                              ) int countPerPage) {
+        return ResponseEntity.ok(adService.findAds(keyWord, page, countPerPage));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Добавить новое объявление")
     public ResponseEntity<AdResponse> addAd(@RequestPart("properties") AdRequest adRequest,
-                                            @RequestPart("image") MultipartFile multipartFile,
-                                            @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(adService.addAd(adRequest, multipartFile, user));
+                                            @RequestPart("image") MultipartFile multipartFile) {
+        return ResponseEntity.ok(adService.addAd(adRequest, multipartFile));
     }
 
     @GetMapping("/{ad_pk}/comments")
@@ -49,9 +62,8 @@ public class AdsController {
     @PostMapping("/{ad_pk}/comments")
     @Operation(summary = "Добавить комментарий к объявлению")
     public ResponseEntity<CommentResponse> addComments(@PathVariable(name = "ad_pk") long adId,
-                                                       @RequestBody CommentRequest commentRequest,
-                                                       @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(commentService.addComment(adId, commentRequest, user));
+                                                       @RequestBody CommentRequest commentRequest) {
+        return ResponseEntity.ok(commentService.addComment(adId, commentRequest));
     }
 
     @GetMapping("/{id}")
@@ -98,7 +110,7 @@ public class AdsController {
 
     @GetMapping("/me")
     @Operation(summary = "Получить все объявления пользователя")
-    public ResponseEntity<AdsListResponse> getUserAds(@AuthenticationPrincipal User user) {
+    public ResponseEntity<AdListResponse> getUserAds(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(adService.getUserAds(user.getId()));
     }
 }

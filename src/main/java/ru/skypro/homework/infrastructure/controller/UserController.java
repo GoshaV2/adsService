@@ -5,10 +5,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.core.model.User;
 import ru.skypro.homework.core.service.UserService;
 import ru.skypro.homework.infrastructure.dto.request.PasswordRequest;
 import ru.skypro.homework.infrastructure.dto.request.UserRequest;
@@ -25,15 +23,14 @@ public class UserController {
 
     @GetMapping("/me")
     @Operation(summary = "Получить текущего пользователя")
-    public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(userService.getUserResponse(user));
+    public ResponseEntity<UserResponse> getCurrentUser() {
+        return ResponseEntity.ok(userService.getUserResponse());
     }
 
     @PostMapping("/set_password")
     @Operation(summary = "Обновить пароль")
-    public ResponseEntity<Void> setPassword(@RequestBody PasswordRequest passwordRequest,
-                                            @AuthenticationPrincipal User user) {
-        userService.changePassword(passwordRequest, user);
+    public ResponseEntity<Void> setPassword(@RequestBody PasswordRequest passwordRequest) {
+        userService.changePassword(passwordRequest);
         return ResponseEntity.ok().build();
     }
 
@@ -45,8 +42,7 @@ public class UserController {
 
     @PatchMapping("/me")
     @Operation(summary = "Обновить пользователя")
-    public ResponseEntity<UserResponse> updateCurrentUser(@RequestBody UserRequest userRequest,
-                                                          @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(userService.updateUser(user, userRequest));
+    public ResponseEntity<UserResponse> updateCurrentUser(@RequestBody UserRequest userRequest) {
+        return ResponseEntity.ok(userService.updateUser(userRequest));
     }
 }

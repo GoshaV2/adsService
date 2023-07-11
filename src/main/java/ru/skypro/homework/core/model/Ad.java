@@ -17,7 +17,7 @@ public class Ad {
     private Long id;
     private String description;
     private String title;
-    private int price;
+    private long price;
     @JoinColumn(name = "author_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private User author;

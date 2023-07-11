@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @Schema(description = "Список объявлений")
-public class AdsListResponse {
+public class AdListResponse {
     @JsonProperty("results")
     @Schema(description = "Объявления")
     private List<AdResponse> adResponseList;

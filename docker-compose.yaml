@@ -1,0 +1,45 @@
+version: "1"
+
+services:
+  app:
+#    image: 'test-bd:latest'
+    ports:
+      - "8080:8080"
+    build:
+      context: .
+    container_name: app_shop
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/compose-postgres
+      - SPRING_DATASOURCE_USERNAME=compose-postgres
+      - SPRING_DATASOURCE_PASSWORD=compose-postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    deploy:
+      resources:
+        limits:
+          cpus: '3'
+          memory: 1536M
+  front:
+    image: 'ghcr.io/bizinmitya/front-react-avito:v1.17'
+    ports:
+      - "3000:3000"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+  db:
+    image: 'postgres:13.1-alpine'
+    container_name: db_shop
+    environment:
+      - POSTGRES_USER=compose-postgres
+      - POSTGRES_PASSWORD=compose-postgres
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+
+  fileStorage:
+    image: 
