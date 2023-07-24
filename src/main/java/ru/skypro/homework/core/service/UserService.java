@@ -1,8 +1,11 @@
 package ru.skypro.homework.core.service;
 
+import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.infrastructure.dto.request.PasswordRequest;
 import ru.skypro.homework.infrastructure.dto.request.UserRequest;
 import ru.skypro.homework.infrastructure.dto.response.UserResponse;
+
+import java.io.InputStream;
 
 /**
  * Сервис пользователя
@@ -29,4 +32,8 @@ public interface UserService {
      * @return дто с данными о пользователе
      */
     UserResponse updateUser(UserRequest userRequest);
+
+    void updateUserImage(MultipartFile file);
+
+    InputStream getUserImage(long userId);
 }

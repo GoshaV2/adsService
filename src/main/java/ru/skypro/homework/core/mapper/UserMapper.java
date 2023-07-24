@@ -1,6 +1,7 @@
 package ru.skypro.homework.core.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import ru.skypro.homework.core.model.User;
 import ru.skypro.homework.infrastructure.dto.request.UserRequest;
 import ru.skypro.homework.infrastructure.dto.response.UserResponse;
@@ -9,5 +10,5 @@ import ru.skypro.homework.infrastructure.dto.response.UserResponse;
 public interface UserMapper {
     User fromUserRequest(UserRequest userRequest);
 
-    UserResponse toUserResponse(User user);
+    UserResponse toUserResponse(User user,String imageUrl);
 }

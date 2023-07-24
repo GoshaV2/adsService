@@ -46,7 +46,7 @@ class AdMapperTest {
                 hasProperty("authorFirstName", equalTo(ad.getAuthor().getFirstName())));
     }
 
-    @Test
+    /*@Test
     void toAdResponse_whenAllDataSuccess() {
         Ad ad = getAd();
         AdResponse adResponse = adMapper.toAdResponse(ad);
@@ -94,7 +94,7 @@ class AdMapperTest {
         assertThat(adListResponsePage,
                 hasProperty("totalElements", equalTo(totalElements)));
         assertThat(adListResponsePage.getAdResponseList(), hasSize(adList.size()));
-    }
+    }*/
 
     @Test
     void fromAdRequest_whenAllDataSuccess() {

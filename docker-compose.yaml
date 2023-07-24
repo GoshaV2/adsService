@@ -1,8 +1,11 @@
 version: "1"
 
+volumes:
+  minio_storage: { }
+
 services:
   app:
-#    image: 'test-bd:latest'
+    #    image: 'test-bd:latest'
     ports:
       - "8080:8080"
     build:
@@ -10,11 +13,17 @@ services:
     container_name: app_shop
     depends_on:
       - db
+      - minio
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/compose-postgres
       - SPRING_DATASOURCE_USERNAME=compose-postgres
       - SPRING_DATASOURCE_PASSWORD=compose-postgres
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - minio.url=minio
+      - minio.accessKey=test
+      - minio.secretKey=testStrongPassword
+      - minio.bucket-name=myapp
+      - minio.secure=false
     deploy:
       resources:
         limits:
@@ -40,6 +49,14 @@ services:
         limits:
           cpus: '0.50'
           memory: 512M
-
-  fileStorage:
-    image: 
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_storage:/data
+    environment:
+      MINIO_ROOT_USER: test
+      MINIO_ROOT_PASSWORD: testStrongPassword
+    command: server --console-address ":9001" /data

@@ -8,12 +8,12 @@ import ru.skypro.homework.infrastructure.dto.response.AdListResponsePage;
 import ru.skypro.homework.infrastructure.dto.response.AdResponse;
 import ru.skypro.homework.infrastructure.dto.response.FullAdResponse;
 
+import java.io.InputStream;
+
 /**
  * Сервис объявлений
  */
 public interface AdService {
-    Ad getAd(long id);
-
     /**
      * Поиск по ключевому слову, например название или описание
      *
@@ -71,4 +71,6 @@ public interface AdService {
      * @return дто со списком объвлений
      */
     AdListResponse getUserAds(long authorId);
+
+    InputStream getAdImage(long adId);
 }

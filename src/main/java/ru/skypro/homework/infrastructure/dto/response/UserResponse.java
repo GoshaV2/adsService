@@ -1,5 +1,6 @@
 package ru.skypro.homework.infrastructure.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -26,5 +27,6 @@ public class UserResponse {
     private String regDate;
     @Schema(description = "Город")
     private String city;
-    private List<String> image;
+    @JsonProperty("image")
+    private String imageUrl;
 }

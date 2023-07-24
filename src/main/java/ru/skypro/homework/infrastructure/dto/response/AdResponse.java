@@ -16,8 +16,9 @@ public class AdResponse {
     @Schema(description = "id автора")
     @JsonProperty("author")
     private long userId;
-    @Schema(description = "Описание")
-    private List<String> image;
+    @Schema(description = "Ссылка на картинку")
+    @JsonProperty("image")
+    private String imageUrl;
     @JsonProperty("pk")
     @Schema(description = "id объявления")
     private long id;

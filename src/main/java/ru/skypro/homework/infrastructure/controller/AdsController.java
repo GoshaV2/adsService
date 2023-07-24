@@ -4,8 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,6 +50,7 @@ public class AdsController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Добавить новое объявление")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<AdResponse> addAd(@RequestPart("properties") AdRequest adRequest,
                                             @RequestPart("image") MultipartFile multipartFile) {
         return ResponseEntity.ok(adService.addAd(adRequest, multipartFile));
@@ -55,12 +58,14 @@ public class AdsController {
 
     @GetMapping("/{ad_pk}/comments")
     @Operation(summary = "Получить комментарии к объявлению")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<CommentListResponse> getComments(@PathVariable(name = "ad_pk") long adId) {
         return ResponseEntity.ok(commentService.getCommentOfAd(adId));
     }
 
     @PostMapping("/{ad_pk}/comments")
     @Operation(summary = "Добавить комментарий к объявлению")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<CommentResponse> addComments(@PathVariable(name = "ad_pk") long adId,
                                                        @RequestBody CommentRequest commentRequest) {
         return ResponseEntity.ok(commentService.addComment(adId, commentRequest));
@@ -68,12 +73,14 @@ public class AdsController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Получить объявление с полным описанием")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<FullAdResponse> getFullAd(@PathVariable(name = "id") long adId) {
         return ResponseEntity.ok(adService.getFullAd(adId));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Удалить объявление")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<Void> removeAd(@PathVariable(name = "id") long adId) {
         adService.removeAd(adId);
         return ResponseEntity.noContent().build();
@@ -81,12 +88,14 @@ public class AdsController {
 
     @PatchMapping("/{id}")
     @Operation(summary = "Обновить объявление")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<AdResponse> updateAds(@PathVariable(name = "id") long adId, @RequestBody AdRequest adRequest) {
         return ResponseEntity.ok(adService.updateAds(adId, adRequest));
     }
 
     @GetMapping("/{ad_pk}/comments/{id}")
     @Operation(summary = "Получить комментарий к объявлению")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<CommentResponse> getComment(@PathVariable(name = "ad_pk") long adId,
                                                       @PathVariable(name = "id") long commentId) {
         return ResponseEntity.ok(commentService.getCommentResponse(adId, commentId));
@@ -94,6 +103,7 @@ public class AdsController {
 
     @DeleteMapping("/{ad_pk}/comments/{id}")
     @Operation(summary = "Удалить комментарий")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<Void> deleteComment(@PathVariable(name = "ad_pk") long adId,
                                               @PathVariable(name = "id") long commentId) {
         commentService.removeComment(adId, commentId);
@@ -102,6 +112,7 @@ public class AdsController {
 
     @PatchMapping("/{ad_pk}/comments/{id}")
     @Operation(summary = "Обновить комментарий")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<CommentResponse> updateComment(@PathVariable(name = "ad_pk") long adId,
                                                          @PathVariable(name = "id") long commentId,
                                                          @RequestBody CommentRequest commentRequest) {
@@ -110,8 +121,16 @@ public class AdsController {
 
     @GetMapping("/me")
     @Operation(summary = "Получить все объявления пользователя")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<AdListResponse> getUserAds(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(adService.getUserAds(user.getId()));
+    }
+
+    @GetMapping("/image/{adId}")
+    public ResponseEntity<InputStreamResource> getAdImage(@PathVariable("adId") long adId){
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(new InputStreamResource(adService.getAdImage(adId)));
     }
 }
 

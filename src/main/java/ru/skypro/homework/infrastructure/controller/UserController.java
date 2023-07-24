@@ -4,13 +4,18 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.core.service.UserService;
 import ru.skypro.homework.infrastructure.dto.request.PasswordRequest;
 import ru.skypro.homework.infrastructure.dto.request.UserRequest;
 import ru.skypro.homework.infrastructure.dto.response.UserResponse;
+
+import java.io.InputStream;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,12 +28,21 @@ public class UserController {
 
     @GetMapping("/me")
     @Operation(summary = "Получить текущего пользователя")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<UserResponse> getCurrentUser() {
         return ResponseEntity.ok(userService.getUserResponse());
     }
 
+    @GetMapping(value = "/image/{userId}")
+    public ResponseEntity<InputStreamResource> getUserImage(@PathVariable("userId") long userId) {
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(new InputStreamResource(userService.getUserImage(userId)));
+    }
+
     @PostMapping("/set_password")
     @Operation(summary = "Обновить пароль")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<Void> setPassword(@RequestBody PasswordRequest passwordRequest) {
         userService.changePassword(passwordRequest);
         return ResponseEntity.ok().build();
@@ -36,12 +50,15 @@ public class UserController {
 
     @PatchMapping("/me/image")
     @Operation(summary = "Обновить аватар")
-    public ResponseEntity<Void> updateUserImage(@RequestParam("file") MultipartFile file) {
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<Void> updateUserImage(@RequestParam("image") MultipartFile file) {
+        userService.updateUserImage(file);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/me")
     @Operation(summary = "Обновить пользователя")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<UserResponse> updateCurrentUser(@RequestBody UserRequest userRequest) {
         return ResponseEntity.ok(userService.updateUser(userRequest));
     }

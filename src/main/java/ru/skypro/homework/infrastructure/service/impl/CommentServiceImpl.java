@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.core.mapper.CommentMapper;
 import ru.skypro.homework.core.model.Comment;
+import ru.skypro.homework.core.model.Role;
 import ru.skypro.homework.core.model.User;
 import ru.skypro.homework.core.repository.AdRepository;
 import ru.skypro.homework.core.repository.CommentRepository;
@@ -25,9 +26,15 @@ public class CommentServiceImpl implements CommentService {
     private final AuthenticationFacade authenticationFacade;
     private final AdRepository adRepository;
 
-    private Comment getComment(long adId, long commentId) {
-        //todo exception
-        return commentRepository.findByIdAndAdId(commentId, adId).orElseThrow();
+    private Comment getCommentWithUserRole(long adId, long commentId) {
+        User user = (User) authenticationFacade.getAuthentication().getPrincipal();
+        Role role = user.getRole();
+        if (role == Role.ADMIN) {
+            return commentRepository.findById(adId).orElseThrow();
+        } else {
+            return commentRepository.findByIdAndAdIdAndAuthorId(commentId, adId, user.getId()).orElseThrow();
+            //todo exception
+        }
     }
 
     @Override
@@ -50,21 +57,24 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentResponse getCommentResponse(long adId, long commentId) {
-        Comment comment = getComment(adId, commentId);
+        Comment comment = getCommentWithUserRole(adId, commentId);
         return commentMapper.toCommentResponse(comment);
     }
 
     @Override
     public void removeComment(long adId, long commentId) {
-        commentRepository.deleteByIdAndAdId(commentId, adId);
+        Comment comment = getCommentWithUserRole(adId, commentId);
+        commentRepository.delete(comment);
     }
 
     @Override
     public CommentResponse updateComment(long adId, long commentId, CommentRequest commentRequest) {
-        Comment comment = getComment(adId, commentId);
+        Comment comment = getCommentWithUserRole(adId, commentId);
         comment.setText(commentRequest.getText());
         comment.setCreatedDate(LocalDateTime.now());
         commentRepository.save(comment);
         return commentMapper.toCommentResponse(comment);
     }
+
+
 }

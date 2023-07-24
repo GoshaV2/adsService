@@ -1,16 +1,22 @@
 package ru.skypro.homework.infrastructure.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.core.mapper.UserMapper;
 import ru.skypro.homework.core.model.User;
+import ru.skypro.homework.core.repository.FileRepository;
 import ru.skypro.homework.core.repository.UserRepository;
 import ru.skypro.homework.core.service.UserService;
 import ru.skypro.homework.infrastructure.dto.request.PasswordRequest;
 import ru.skypro.homework.infrastructure.dto.request.UserRequest;
 import ru.skypro.homework.infrastructure.dto.response.UserResponse;
 import ru.skypro.homework.infrastructure.facade.AuthenticationFacade;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 @Service
 @RequiredArgsConstructor
@@ -19,11 +25,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationFacade authenticationFacade;
+    private final FileRepository fileRepository;
+    @Value("${user.image.url}")
+    private String userImageUrl;
 
     @Override
     public UserResponse getUserResponse() {
         User user = (User) authenticationFacade.getAuthentication().getPrincipal();
-        return userMapper.toUserResponse(user);
+        return userMapper.toUserResponse(user, getUserImageUrl(user.getId()));
     }
 
     @Override
@@ -43,6 +52,30 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(userRequest.getFirstName());
         user.setLastName(userRequest.getLastName());
         userRepository.save(user);
-        return userMapper.toUserResponse(user);
+        return userMapper.toUserResponse(user, getUserImageUrl(user.getId()));
+    }
+
+    @Override
+    public void updateUserImage(MultipartFile file) {
+        User user = (User) authenticationFacade.getAuthentication().getPrincipal();
+        String imageName = getUserImageName(user.getId());
+        try {
+            fileRepository.addFile(imageName, file.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public InputStream getUserImage(long userId) {
+        return fileRepository.getFile(getUserImageName(userId));
+    }
+
+    private String getUserImageName(long userId) {
+        return "/image/user/" + userId+".jpeg";
+    }
+
+    private String getUserImageUrl(long userId) {
+        return String.format(userImageUrl, userId);
     }
 }
