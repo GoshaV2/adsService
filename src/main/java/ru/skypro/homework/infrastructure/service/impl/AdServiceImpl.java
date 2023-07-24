@@ -50,6 +50,10 @@ public class AdServiceImpl implements AdService {
         return adRepository.findByIdAndAuthorId(id, user.getId()).orElseThrow();
     }
 
+    private Ad getAd(long id){
+        return adRepository.findById(id).orElseThrow();
+    }
+
     @Override
     public AdListResponsePage findAds(String keyWord, int page, int countPerPage) {
         if (countPerPage <= 0) {
@@ -87,13 +91,14 @@ public class AdServiceImpl implements AdService {
     @Override
     @Transactional
     public FullAdResponse getFullAd(long adId) {
-        Ad ad = getAdWithRole(adId);
+        Ad ad =getAd(adId);
         return adMapper.toFullAdResponse(ad, getAdImageUrl(adId));
     }
 
     @Override
     public void removeAd(long adId) {
-        adRepository.deleteById(adId);
+        Ad ad = getAdWithRole(adId);
+        adRepository.delete(ad);
     }
 
     @Override
