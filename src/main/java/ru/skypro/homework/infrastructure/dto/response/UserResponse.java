@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,8 +23,6 @@ public class UserResponse {
     private String phone;
     @Schema(description = "Дата регистрации")
     private String regDate;
-    @Schema(description = "Город")
-    private String city;
     @JsonProperty("image")
     private String imageUrl;
 }

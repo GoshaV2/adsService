@@ -12,13 +12,16 @@ import ru.skypro.homework.infrastructure.dto.response.AdListResponsePage;
 import ru.skypro.homework.infrastructure.dto.response.AdResponse;
 import ru.skypro.homework.infrastructure.dto.response.FullAdResponse;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 class AdMapperTest {
-    private AdMapper adMapper = Mappers.getMapper(AdMapper.class);
+    private final AdMapper adMapper = Mappers.getMapper(AdMapper.class);
 
     @Test
     void toFullAdResponse_whenAllDataSuccess() {
@@ -46,10 +49,11 @@ class AdMapperTest {
                 hasProperty("authorFirstName", equalTo(ad.getAuthor().getFirstName())));
     }
 
-    /*@Test
+    @Test
     void toAdResponse_whenAllDataSuccess() {
         Ad ad = getAd();
-        AdResponse adResponse = adMapper.toAdResponse(ad);
+        String imageUrl = "url";
+        AdResponse adResponse = adMapper.toAdResponse(ad, imageUrl);
 
         assertThat(adResponse,
                 hasProperty("userId", equalTo(ad.getAuthor().getId())));
@@ -59,12 +63,15 @@ class AdMapperTest {
                 hasProperty("price", equalTo(ad.getPrice())));
         assertThat(adResponse,
                 hasProperty("title", equalTo(ad.getTitle())));
+        assertThat(adResponse,
+                hasProperty("imageUrl", equalTo(imageUrl)));
     }
 
     @Test
     void toAdsListResponse_whenAllDataSuccess() {
         List<Ad> adList = getAdList();
-        AdListResponse adListResponse = adMapper.toAdListResponse(adList);
+        Map<Long, String> imageUrlMap = generateImageUrls(adList);
+        AdListResponse adListResponse = adMapper.toAdListResponse(adList, imageUrlMap);
 
         assertThat(adListResponse,
                 hasProperty("count", equalTo(adList.size())));
@@ -74,12 +81,14 @@ class AdMapperTest {
     }
 
     @Test
-    void toAdListResponse_whenAllDataSuccess() {
+    void toAdListResponsePage_whenAllDataSuccess() {
         List<Ad> adList = getAdList();
         int page = 0;
         int totalPage = 1;
         long totalElements = adList.size();
-        AdListResponsePage adListResponsePage = adMapper.toAdListResponsePage(adList, page, totalPage, totalElements);
+        Map<Long, String> imageUrlMap = generateImageUrls(adList);
+        AdListResponsePage adListResponsePage = adMapper.toAdListResponsePage(adList, page, totalPage, totalElements,
+                imageUrlMap);
 
         assertThat(adListResponsePage,
                 hasProperty("count", equalTo(adList.size())));
@@ -94,7 +103,7 @@ class AdMapperTest {
         assertThat(adListResponsePage,
                 hasProperty("totalElements", equalTo(totalElements)));
         assertThat(adListResponsePage.getAdResponseList(), hasSize(adList.size()));
-    }*/
+    }
 
     @Test
     void fromAdRequest_whenAllDataSuccess() {
@@ -117,7 +126,6 @@ class AdMapperTest {
                 .email("test@mail.ru")
                 .phone("+777777777")
                 .role(Role.USER)
-                .city("Moscow")
                 .firstName("name")
                 .lastName("surname")
                 .password("secret")
@@ -141,5 +149,11 @@ class AdMapperTest {
                 .price(1000)
                 .title("title")
                 .build();
+    }
+
+    private Map<Long, String> generateImageUrls(List<Ad> adList) {
+        Map<Long, String> map = new HashMap<>();
+        adList.forEach(ad -> map.put(ad.getId(), UUID.randomUUID().toString()));
+        return map;
     }
 }

@@ -15,6 +15,8 @@ import ru.skypro.homework.core.service.AuthService;
 import ru.skypro.homework.infrastructure.dto.request.LoginReq;
 import ru.skypro.homework.infrastructure.dto.request.RegisterReq;
 
+import javax.validation.Valid;
+
 import static ru.skypro.homework.core.model.Role.USER;
 
 @Slf4j
@@ -28,7 +30,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "Аутентификация")
-    public ResponseEntity<?> login(@RequestBody LoginReq req) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginReq req) {
         if (authService.login(req.getUsername(), req.getPassword())) {
             return ResponseEntity.ok().build();
         } else {
@@ -38,7 +40,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Регистрация")
-    public ResponseEntity<?> register(@RequestBody RegisterReq req) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterReq req) {
         Role role = req.getRole() == null ? USER : req.getRole();
         if (authService.register(req, role)) {
             return ResponseEntity.ok().build();

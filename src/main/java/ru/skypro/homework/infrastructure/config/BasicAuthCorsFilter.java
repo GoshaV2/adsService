@@ -1,4 +1,4 @@
-package ru.skypro.homework.infrastructure.controller;
+package ru.skypro.homework.infrastructure.config;
 
 
 import org.springframework.stereotype.Component;

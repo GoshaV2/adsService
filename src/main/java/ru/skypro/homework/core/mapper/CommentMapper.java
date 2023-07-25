@@ -12,14 +12,16 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public abstract class CommentMapper {
-    @Mapping(target = "userId", source = "id")
     @Mapping(target = "authorFirstName", source = "author.firstName")
+    @Mapping(target = "userId", source = "author.id")
+    @Mapping(target = "authorImageUrl", source = "author.userImageUrl")
     public abstract CommentResponse toCommentResponse(Comment comment);
 
     public CommentListResponse toCommentListResponse(List<Comment> commentList) {
         CommentListResponse commentListResponse = new CommentListResponse();
         commentListResponse.setCommentResponseList(commentList.stream()
-                .map(this::toCommentResponse).collect(Collectors.toList()));
+                .map(this::toCommentResponse)
+                .collect(Collectors.toList()));
         commentListResponse.setCount(commentList.size());
         return commentListResponse;
     }

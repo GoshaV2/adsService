@@ -21,6 +21,9 @@ public class CommentResponse {
     private LocalDateTime createdDate;
     @Schema(description = "Имя автора")
     private String authorFirstName;
+    @Schema(description = "Имя автора")
+    @JsonProperty("authorImage")
+    private String authorImageUrl;
     @JsonProperty("pk")
     @Schema(description = "id комментария")
     private long id;

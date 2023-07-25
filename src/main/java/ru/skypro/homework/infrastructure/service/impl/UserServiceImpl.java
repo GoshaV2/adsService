@@ -1,6 +1,7 @@
 package ru.skypro.homework.infrastructure.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import ru.skypro.homework.core.service.UserService;
 import ru.skypro.homework.infrastructure.dto.request.PasswordRequest;
 import ru.skypro.homework.infrastructure.dto.request.UserRequest;
 import ru.skypro.homework.infrastructure.dto.response.UserResponse;
+import ru.skypro.homework.infrastructure.exception.CredentialsException;
 import ru.skypro.homework.infrastructure.facade.AuthenticationFacade;
 
 import java.io.IOException;
@@ -20,6 +22,7 @@ import java.io.InputStream;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
@@ -32,14 +35,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserResponse() {
         User user = (User) authenticationFacade.getAuthentication().getPrincipal();
-        return userMapper.toUserResponse(user, getUserImageUrl(user.getId()));
+        return userMapper.toUserResponse(user);
     }
 
     @Override
     public void changePassword(PasswordRequest passwordRequest) {
         User user = (User) authenticationFacade.getAuthentication().getPrincipal();
         if (!passwordEncoder.matches(passwordRequest.getCurrentPassword(), user.getPassword())) {
-            //todo throw exception
+            throw new CredentialsException();
         }
         user.setPassword(passwordEncoder.encode(passwordRequest.getNewPassword()));
         userRepository.save(user);
@@ -52,17 +55,19 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(userRequest.getFirstName());
         user.setLastName(userRequest.getLastName());
         userRepository.save(user);
-        return userMapper.toUserResponse(user, getUserImageUrl(user.getId()));
+        return userMapper.toUserResponse(user);
     }
 
     @Override
     public void updateUserImage(MultipartFile file) {
         User user = (User) authenticationFacade.getAuthentication().getPrincipal();
         String imageName = getUserImageName(user.getId());
+        user.setUserImageUrl(getUserImageUrl(user.getId()));
+        userRepository.save(user);
         try {
             fileRepository.addFile(imageName, file.getInputStream());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.toString());
         }
     }
 
@@ -72,7 +77,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private String getUserImageName(long userId) {
-        return "/image/user/" + userId+".jpeg";
+        return "/image/user/" + userId + ".jpeg";
     }
 
     private String getUserImageUrl(long userId) {

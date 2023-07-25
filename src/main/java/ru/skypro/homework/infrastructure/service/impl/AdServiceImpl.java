@@ -21,6 +21,7 @@ import ru.skypro.homework.infrastructure.dto.response.AdListResponse;
 import ru.skypro.homework.infrastructure.dto.response.AdListResponsePage;
 import ru.skypro.homework.infrastructure.dto.response.AdResponse;
 import ru.skypro.homework.infrastructure.dto.response.FullAdResponse;
+import ru.skypro.homework.infrastructure.exception.NotFoundElementException;
 import ru.skypro.homework.infrastructure.facade.AuthenticationFacade;
 
 import java.io.IOException;
@@ -43,15 +44,18 @@ public class AdServiceImpl implements AdService {
     private Ad getAdWithRole(long id) {
         User user = (User) authenticationFacade.getAuthentication().getPrincipal();
         Role role = user.getRole();
-        //todo добавить ошибку
         if (role == Role.ADMIN) {
-            return adRepository.findById(id).orElseThrow();
+            return adRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundElementException(id, Ad.class));
         }
-        return adRepository.findByIdAndAuthorId(id, user.getId()).orElseThrow();
+        return adRepository.findByIdAndAuthorId(id, user.getId())
+                .orElseThrow(() ->
+                        new NotFoundElementException("Entity(%s) with id=%d and userId=%d not be found",
+                                Ad.class, id, user.getId()));
     }
 
-    private Ad getAd(long id){
-        return adRepository.findById(id).orElseThrow();
+    private Ad getAd(long id) {
+        return adRepository.findById(id).orElseThrow(() -> new NotFoundElementException(id, Ad.class));
     }
 
     @Override
@@ -80,18 +84,20 @@ public class AdServiceImpl implements AdService {
         ad.setAuthor(user);
         adRepository.save(ad);
         String fileName = getAdImageName(ad.getId());
+
         try {
             fileRepository.addFile(fileName, multipartFile.getInputStream());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.toString());
         }
+
         return adMapper.toAdResponse(ad, getAdImageUrl(ad.getId()));
     }
 
     @Override
     @Transactional
     public FullAdResponse getFullAd(long adId) {
-        Ad ad =getAd(adId);
+        Ad ad = getAd(adId);
         return adMapper.toFullAdResponse(ad, getAdImageUrl(adId));
     }
 

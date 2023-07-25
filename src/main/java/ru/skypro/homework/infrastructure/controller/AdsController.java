@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.core.model.User;
@@ -18,12 +19,17 @@ import ru.skypro.homework.infrastructure.dto.request.AdRequest;
 import ru.skypro.homework.infrastructure.dto.request.CommentRequest;
 import ru.skypro.homework.infrastructure.dto.response.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/ads")
 @SecurityRequirement(name = "basic")
 @CrossOrigin(value = "http://localhost:3000")
 @Tag(name = "Объявления")
+@Validated
 public class AdsController {
     private final AdService adService;
     private final CommentService commentService;
@@ -37,11 +43,11 @@ public class AdsController {
     @GetMapping("/find")
     @Operation(summary = "Найти объявления по названию и описанию")
     public ResponseEntity<AdListResponsePage> getAdsByKeyWord(@RequestParam("keyWord") String keyWord,
-                                                              @RequestParam(name = "page",
+                                                              @Positive @RequestParam(name = "page",
                                                                       required = false,
                                                                       defaultValue = "0"
                                                               ) int page,
-                                                              @RequestParam(name = "countPerPage",
+                                                              @Min(1) @RequestParam(name = "countPerPage",
                                                                       required = false,
                                                                       defaultValue = "50"
                                                               ) int countPerPage) {
@@ -51,7 +57,7 @@ public class AdsController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Добавить новое объявление")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<AdResponse> addAd(@RequestPart("properties") AdRequest adRequest,
+    public ResponseEntity<AdResponse> addAd(@Valid @RequestPart("properties") AdRequest adRequest,
                                             @RequestPart("image") MultipartFile multipartFile) {
         return ResponseEntity.ok(adService.addAd(adRequest, multipartFile));
     }
@@ -67,7 +73,7 @@ public class AdsController {
     @Operation(summary = "Добавить комментарий к объявлению")
     @PreAuthorize("permitAll()")
     public ResponseEntity<CommentResponse> addComments(@PathVariable(name = "ad_pk") long adId,
-                                                       @RequestBody CommentRequest commentRequest) {
+                                                      @Valid  @RequestBody CommentRequest commentRequest) {
         return ResponseEntity.ok(commentService.addComment(adId, commentRequest));
     }
 
@@ -89,7 +95,7 @@ public class AdsController {
     @PatchMapping("/{id}")
     @Operation(summary = "Обновить объявление")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<AdResponse> updateAds(@PathVariable(name = "id") long adId, @RequestBody AdRequest adRequest) {
+    public ResponseEntity<AdResponse> updateAds(@PathVariable(name = "id") long adId,@Valid  @RequestBody AdRequest adRequest) {
         return ResponseEntity.ok(adService.updateAds(adId, adRequest));
     }
 
@@ -115,7 +121,7 @@ public class AdsController {
     @PreAuthorize("permitAll()")
     public ResponseEntity<CommentResponse> updateComment(@PathVariable(name = "ad_pk") long adId,
                                                          @PathVariable(name = "id") long commentId,
-                                                         @RequestBody CommentRequest commentRequest) {
+                                                         @Valid @RequestBody CommentRequest commentRequest) {
         return ResponseEntity.ok(commentService.updateComment(adId, commentId, commentRequest));
     }
 
@@ -127,7 +133,7 @@ public class AdsController {
     }
 
     @GetMapping("/image/{adId}")
-    public ResponseEntity<InputStreamResource> getAdImage(@PathVariable("adId") long adId){
+    public ResponseEntity<InputStreamResource> getAdImage(@PathVariable("adId") long adId) {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(new InputStreamResource(adService.getAdImage(adId)));

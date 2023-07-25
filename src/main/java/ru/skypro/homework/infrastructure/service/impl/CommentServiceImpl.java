@@ -13,6 +13,7 @@ import ru.skypro.homework.core.service.CommentService;
 import ru.skypro.homework.infrastructure.dto.request.CommentRequest;
 import ru.skypro.homework.infrastructure.dto.response.CommentListResponse;
 import ru.skypro.homework.infrastructure.dto.response.CommentResponse;
+import ru.skypro.homework.infrastructure.exception.NotFoundElementException;
 import ru.skypro.homework.infrastructure.facade.AuthenticationFacade;
 
 import java.time.LocalDateTime;
@@ -30,10 +31,13 @@ public class CommentServiceImpl implements CommentService {
         User user = (User) authenticationFacade.getAuthentication().getPrincipal();
         Role role = user.getRole();
         if (role == Role.ADMIN) {
-            return commentRepository.findById(adId).orElseThrow();
+            return commentRepository.findById(commentId)
+                    .orElseThrow(() -> new NotFoundElementException(commentId, Comment.class));
         } else {
-            return commentRepository.findByIdAndAdIdAndAuthorId(commentId, adId, user.getId()).orElseThrow();
-            //todo exception
+            return commentRepository.findByIdAndAdIdAndAuthorId(commentId, adId, user.getId())
+                    .orElseThrow(() ->
+                            new NotFoundElementException("Entity(%s) with id=%d and adId=%d and userId=%d not be found",
+                                    Comment.class, commentId, adId, user.getId()));
         }
     }
 

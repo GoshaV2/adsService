@@ -15,7 +15,7 @@ import ru.skypro.homework.infrastructure.dto.request.PasswordRequest;
 import ru.skypro.homework.infrastructure.dto.request.UserRequest;
 import ru.skypro.homework.infrastructure.dto.response.UserResponse;
 
-import java.io.InputStream;
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,7 +43,7 @@ public class UserController {
     @PostMapping("/set_password")
     @Operation(summary = "Обновить пароль")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<Void> setPassword(@RequestBody PasswordRequest passwordRequest) {
+    public ResponseEntity<Void> setPassword(@Valid @RequestBody PasswordRequest passwordRequest) {
         userService.changePassword(passwordRequest);
         return ResponseEntity.ok().build();
     }
@@ -59,7 +59,7 @@ public class UserController {
     @PatchMapping("/me")
     @Operation(summary = "Обновить пользователя")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<UserResponse> updateCurrentUser(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<UserResponse> updateCurrentUser(@Valid @RequestBody UserRequest userRequest) {
         return ResponseEntity.ok(userService.updateUser(userRequest));
     }
 }

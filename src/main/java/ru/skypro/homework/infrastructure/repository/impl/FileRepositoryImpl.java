@@ -1,4 +1,4 @@
-package ru.skypro.homework.infrastructure.service.impl;
+package ru.skypro.homework.infrastructure.repository.impl;
 
 import io.minio.*;
 import lombok.RequiredArgsConstructor;
@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import ru.skypro.homework.core.repository.FileRepository;
+import ru.skypro.homework.infrastructure.exception.FileNotLoadException;
+import ru.skypro.homework.infrastructure.exception.FileNotUploadException;
 
 import javax.annotation.PostConstruct;
 import java.io.InputStream;
@@ -43,7 +45,7 @@ public class FileRepositoryImpl implements FileRepository {
         try (inputStream) {
             minioClient.putObject(putObjectArgs);
         } catch (Exception e) {
-            log.error(e.toString());
+            throw new FileNotUploadException(e);
         }
     }
 
@@ -54,12 +56,10 @@ public class FileRepositoryImpl implements FileRepository {
                 .object(name)
                 .build();
         try {
-            InputStream stream = minioClient
+            return minioClient
                     .getObject(getObjectArgs);
-            return stream;
         } catch (Exception e) {
-            log.error(e.toString());
-            throw new IllegalArgumentException();
+            throw new FileNotLoadException(e);
         }
     }
 }

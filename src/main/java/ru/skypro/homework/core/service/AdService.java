@@ -1,7 +1,6 @@
 package ru.skypro.homework.core.service;
 
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.core.model.Ad;
 import ru.skypro.homework.infrastructure.dto.request.AdRequest;
 import ru.skypro.homework.infrastructure.dto.response.AdListResponse;
 import ru.skypro.homework.infrastructure.dto.response.AdListResponsePage;

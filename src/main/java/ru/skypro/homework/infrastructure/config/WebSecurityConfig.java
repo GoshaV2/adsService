@@ -26,17 +26,16 @@ public class WebSecurityConfig {
             "/login",
             "/register",
             "/ads",
+            "/ads/find",
             "/users/image/**",
             "/ads/image/**"
     };
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> {
-            //todo добавить пояснение к ошибке
-            return userRepository.findByEmail(username)
-                    .orElseThrow(() -> new UsernameNotFoundException(username));
-        };
+        return username -> userRepository.findByEmail(username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(String.format("Not found user[username=%s].", username)));
     }
 
     @Bean
