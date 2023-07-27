@@ -30,6 +30,8 @@ class UserMapperTest {
                 hasProperty("lastName", equalTo(user.getLastName())));
         assertThat(userResponse,
                 hasProperty("firstName", equalTo(user.getFirstName())));
+        assertThat(userResponse,
+                hasProperty("role", equalTo(user.getRole())));
     }
 
     private User getUser() {

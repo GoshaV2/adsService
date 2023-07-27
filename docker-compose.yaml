@@ -1,4 +1,4 @@
-version: "1"
+version: "2.2"
 
 volumes:
   minio_storage: { }
@@ -24,31 +24,23 @@ services:
       - minio.secretKey=testStrongPassword
       - minio.bucket-name=myapp
       - minio.secure=false
-    deploy:
-      resources:
-        limits:
-          cpus: '3'
-          memory: 1536M
+    cpus: 3
+    mem_limit: 1536M
+
   front:
-    image: 'ghcr.io/bizinmitya/front-react-avito:v1.17'
+    image: 'ghcr.io/bizinmitya/front-react-avito:v1.19'
     ports:
       - "3000:3000"
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
+    cpus: 3
+    mem_limit: 1536M
   db:
     image: 'postgres:13.1-alpine'
     container_name: db_shop
     environment:
       - POSTGRES_USER=compose-postgres
       - POSTGRES_PASSWORD=compose-postgres
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
+    cpus: 3
+    mem_limit: 1536M
   minio:
     image: minio/minio
     ports:

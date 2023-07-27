@@ -14,6 +14,7 @@ import ru.skypro.homework.core.model.Ad;
 import ru.skypro.homework.core.model.Role;
 import ru.skypro.homework.core.model.User;
 import ru.skypro.homework.core.repository.AdRepository;
+import ru.skypro.homework.core.repository.CommentRepository;
 import ru.skypro.homework.core.repository.FileRepository;
 import ru.skypro.homework.core.service.AdService;
 import ru.skypro.homework.infrastructure.dto.request.AdRequest;
@@ -21,6 +22,7 @@ import ru.skypro.homework.infrastructure.dto.response.AdListResponse;
 import ru.skypro.homework.infrastructure.dto.response.AdListResponsePage;
 import ru.skypro.homework.infrastructure.dto.response.AdResponse;
 import ru.skypro.homework.infrastructure.dto.response.FullAdResponse;
+import ru.skypro.homework.infrastructure.exception.FileInputStreamException;
 import ru.skypro.homework.infrastructure.exception.NotFoundElementException;
 import ru.skypro.homework.infrastructure.facade.AuthenticationFacade;
 
@@ -38,6 +40,7 @@ public class AdServiceImpl implements AdService {
     private final AuthenticationFacade authenticationFacade;
     private final AdMapper adMapper;
     private final FileRepository fileRepository;
+    private final CommentRepository commentRepository;
     @Value("${ad.image.url}")
     private String adImageUrl;
 
@@ -88,7 +91,7 @@ public class AdServiceImpl implements AdService {
         try {
             fileRepository.addFile(fileName, multipartFile.getInputStream());
         } catch (IOException e) {
-            log.error(e.toString());
+            throw new FileInputStreamException(e);
         }
 
         return adMapper.toAdResponse(ad, getAdImageUrl(ad.getId()));
@@ -104,6 +107,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public void removeAd(long adId) {
         Ad ad = getAdWithRole(adId);
+        commentRepository.deleteAllByAd(ad);
         adRepository.delete(ad);
     }
 

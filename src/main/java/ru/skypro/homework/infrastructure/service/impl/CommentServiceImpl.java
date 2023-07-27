@@ -2,7 +2,6 @@ package ru.skypro.homework.infrastructure.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.core.mapper.CommentMapper;
 import ru.skypro.homework.core.model.Comment;
 import ru.skypro.homework.core.model.Role;
@@ -42,7 +41,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
     public CommentListResponse getCommentOfAd(long adId) {
         List<Comment> commentsOfAd = commentRepository.findAllByAdId(adId);
         return commentMapper.toCommentListResponse(commentsOfAd);

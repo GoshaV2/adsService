@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.core.model.Role;
 import ru.skypro.homework.core.model.User;
 import ru.skypro.homework.core.repository.UserRepository;
@@ -21,15 +22,13 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
+    @Transactional
     public boolean login(String userName, String password) {
-        if (!userRepository.existsByEmail(userName)) {
-            log.error(String.format("User[username=%s] not exist.", userName));
-            return false;
-        }
         return encoder.matches(password, UserDetailsService.loadUserByUsername(userName).getPassword());
     }
 
     @Override
+    @Transactional
     public boolean register(RegisterReq registerReq, Role role) {
         if (userRepository.existsByEmail(registerReq.getUsername())) {
             log.error(String.format("User[username=%s] already exist.", registerReq.getUsername()));

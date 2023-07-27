@@ -73,7 +73,7 @@ public class AdsController {
     @Operation(summary = "Добавить комментарий к объявлению")
     @PreAuthorize("permitAll()")
     public ResponseEntity<CommentResponse> addComments(@PathVariable(name = "ad_pk") long adId,
-                                                      @Valid  @RequestBody CommentRequest commentRequest) {
+                                                       @Valid @RequestBody CommentRequest commentRequest) {
         return ResponseEntity.ok(commentService.addComment(adId, commentRequest));
     }
 
@@ -95,7 +95,7 @@ public class AdsController {
     @PatchMapping("/{id}")
     @Operation(summary = "Обновить объявление")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<AdResponse> updateAds(@PathVariable(name = "id") long adId,@Valid  @RequestBody AdRequest adRequest) {
+    public ResponseEntity<AdResponse> updateAds(@PathVariable(name = "id") long adId, @Valid @RequestBody AdRequest adRequest) {
         return ResponseEntity.ok(adService.updateAds(adId, adRequest));
     }
 

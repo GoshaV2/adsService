@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 @Getter
 @Builder
@@ -16,15 +17,13 @@ import javax.validation.constraints.Min;
 @Schema(description = "Добавление или изменение объявления")
 public class AdRequest {
     @Schema(description = "Описание")
-    @Min(3)
-    @Max(250)
+    @Size(min = 3, max = 250)
     private String description;
     @Schema(description = "Цена")
     @Min(3)
-    @Max(250)
+    @Max(100000)
     private long price;
     @Schema(description = "Заголовок")
-    @Min(3)
-    @Max(250)
+    @Size(min = 3, max = 250)
     private String title;
 }

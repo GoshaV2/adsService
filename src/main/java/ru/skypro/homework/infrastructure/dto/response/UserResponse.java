@@ -3,6 +3,7 @@ package ru.skypro.homework.infrastructure.dto.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+import ru.skypro.homework.core.model.Role;
 
 @Getter
 @Setter
@@ -25,4 +26,5 @@ public class UserResponse {
     private String regDate;
     @JsonProperty("image")
     private String imageUrl;
+    private Role role;
 }

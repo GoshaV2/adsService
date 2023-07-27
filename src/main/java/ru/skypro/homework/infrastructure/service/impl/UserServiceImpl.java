@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.core.mapper.UserMapper;
 import ru.skypro.homework.core.model.User;
@@ -15,6 +16,7 @@ import ru.skypro.homework.infrastructure.dto.request.PasswordRequest;
 import ru.skypro.homework.infrastructure.dto.request.UserRequest;
 import ru.skypro.homework.infrastructure.dto.response.UserResponse;
 import ru.skypro.homework.infrastructure.exception.CredentialsException;
+import ru.skypro.homework.infrastructure.exception.FileInputStreamException;
 import ru.skypro.homework.infrastructure.facade.AuthenticationFacade;
 
 import java.io.IOException;
@@ -39,6 +41,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void changePassword(PasswordRequest passwordRequest) {
         User user = (User) authenticationFacade.getAuthentication().getPrincipal();
         if (!passwordEncoder.matches(passwordRequest.getCurrentPassword(), user.getPassword())) {
@@ -59,6 +62,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updateUserImage(MultipartFile file) {
         User user = (User) authenticationFacade.getAuthentication().getPrincipal();
         String imageName = getUserImageName(user.getId());
@@ -67,7 +71,7 @@ public class UserServiceImpl implements UserService {
         try {
             fileRepository.addFile(imageName, file.getInputStream());
         } catch (IOException e) {
-            log.error(e.toString());
+            throw new FileInputStreamException(e);
         }
     }
 
