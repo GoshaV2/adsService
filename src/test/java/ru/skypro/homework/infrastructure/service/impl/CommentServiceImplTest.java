@@ -237,6 +237,7 @@ class CommentServiceImplTest {
 
     private Comment getComment(Ad ad, User commentAuthor) {
         return Comment.builder()
+                .id(1L)
                 .text("text1")
                 .createdDate(LocalDateTime.now())
                 .ad(ad)
