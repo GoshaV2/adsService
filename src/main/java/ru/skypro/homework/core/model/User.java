@@ -22,12 +22,18 @@ public class User implements UserDetails {
     private Long id;
     @Column(name = "email", unique = true)
     private String email;
+    @Column(name = "password", nullable = false)
     private String password;
+    @Column(name = "firstName", nullable = false)
     private String firstName;
+    @Column(name = "lastName", nullable = false)
     private String lastName;
+    @Column(name = "phone", nullable = false)
     private String phone;
+    @Column(name = "userImageUrl")
     private String userImageUrl;
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
     private Role role;
 
     @Override

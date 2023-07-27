@@ -33,7 +33,18 @@ public interface UserService {
      */
     UserResponse updateUser(UserRequest userRequest);
 
+    /**
+     * Обновить аватар текущего пользователя
+     *
+     * @param file
+     */
     void updateUserImage(MultipartFile file);
 
+    /**
+     * Получить аватар
+     *
+     * @param userId id пользователя у котого хотим получить
+     * @return поток данных изображения
+     */
     InputStream getUserImage(long userId);
 }
