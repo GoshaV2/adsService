@@ -21,7 +21,7 @@ public class AdRequest {
     private String description;
     @Schema(description = "Цена")
     @Min(3)
-    @Max(100000)
+    @Max(1000000000)
     private long price;
     @Schema(description = "Заголовок")
     @Size(min = 3, max = 250)

@@ -14,6 +14,7 @@ import ru.skypro.homework.core.service.UserService;
 import ru.skypro.homework.infrastructure.dto.request.PasswordRequest;
 import ru.skypro.homework.infrastructure.dto.request.UserRequest;
 import ru.skypro.homework.infrastructure.dto.response.UserResponse;
+import ru.skypro.homework.infrastructure.validation.MultipartFileConstraint;
 
 import javax.validation.Valid;
 
@@ -51,7 +52,9 @@ public class UserController {
     @PatchMapping("/me/image")
     @Operation(summary = "Обновить аватар")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<Void> updateUserImage(@RequestParam("image") MultipartFile file) {
+    public ResponseEntity<Void> updateUserImage(@MultipartFileConstraint(contentTypes =
+            {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE}, maxSize = 100000000)
+                                                @RequestParam("image") MultipartFile file) {
         userService.updateUserImage(file);
         return ResponseEntity.ok().build();
     }

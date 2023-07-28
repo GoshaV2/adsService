@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.core.model.User;
 import ru.skypro.homework.core.service.AdService;
 import ru.skypro.homework.core.service.CommentService;
+import ru.skypro.homework.infrastructure.validation.MultipartFileConstraint;
 import ru.skypro.homework.infrastructure.dto.request.AdRequest;
 import ru.skypro.homework.infrastructure.dto.request.CommentRequest;
 import ru.skypro.homework.infrastructure.dto.response.*;
@@ -58,6 +59,8 @@ public class AdsController {
     @Operation(summary = "Добавить новое объявление")
     @PreAuthorize("permitAll()")
     public ResponseEntity<AdResponse> addAd(@Valid @RequestPart("properties") AdRequest adRequest,
+                                            @MultipartFileConstraint(contentTypes = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE},
+                                                    minSize = 20, maxSize = 100000000)
                                             @RequestPart("image") MultipartFile multipartFile) {
         return ResponseEntity.ok(adService.addAd(adRequest, multipartFile));
     }
